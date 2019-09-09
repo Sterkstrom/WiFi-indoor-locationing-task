@@ -1,0 +1,12 @@
+What do I want to do:
+
+- Need to exclude all values of 100, as this does not provide much info
+- I want to normalize by row, having excluded 100. (Because different phones get different values from same spot)
+- 
+
+1. Take a sample of the training set (Sample-train)
+2. Predict over the cross validation set (phase 1)
+3. We then predict over the testing set. The whole set minus the sample (phase 2)
+4. We then go the the validation set. 
+5. Predict from the validation set (Phase 3)
+6. REAL production. Send the models that we want to the university (Phase 4)

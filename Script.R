@@ -7,16 +7,16 @@ pacman::p_load("readr", "caret", "ggplot2", "MASS", "reshape", "reshape2", "crun
 training_data<- read.csv("trainingData.csv", sep = ",")
 validation_data<- read.csv("validationData.csv", sep = ",")
 
-x<- readRDS("Model_x")
-y<- readRDS("Model_y")
-z<- readRDS("Model_z")
-base_randomforest<- readRDS("Model_base_randomforest")
-random_forest_longitude<- readRDS("Model_random_forest_longitude")
-random_forest_latitude<- readRDS("Model_random_forest_latitude")
-randomForestBuilding<- readRDS("Model_random_forest_building")
-cascadingRandomForestLongitude<- readRDS("Model_cascading_random_forest_longitude")
-cascadingRandonForestLatitude<- readRDS("Model_cascadingRandomForestLatitude")
-cascadingRandomForestFloor<- readRDS("Model_cascadingRandomForestFloor")
+#x<- readRDS("Model_x")
+#y<- readRDS("Model_y")
+#z<- readRDS("Model_z")
+#base_randomforest<- readRDS("Model_base_randomforest")
+#random_forest_longitude<- readRDS("Model_random_forest_longitude")
+#random_forest_latitude<- readRDS("Model_random_forest_latitude")
+#randomForestBuilding<- readRDS("Model_random_forest_building")
+#cascadingRandomForestLongitude<- readRDS("Model_cascading_random_forest_longitude")
+#cascadingRandonForestLatitude<- readRDS("Model_cascadingRandomForestLatitude")
+#cascadingRandomForestFloor<- readRDS("Model_cascadingRandomForestFloor")
 
 # Preprocessing of the data ####
 
@@ -46,21 +46,21 @@ class(training_data$LATITUDE)
 # Checking which variable is easiest to predict
 
 trimmedSet$LATITUDE <- as.numeric(trimmedSet$LATITUDE)
-#x <-train(LATITUDE~., data = trimmedSet[,c(1:465, 467)], method = "lm")
+x <-train(LATITUDE~., data = trimmedSet[,c(1:465, 467)], method = "lm")
 summary(x)
 postResample(x$finalModel$fitted.values, trimmedSet$LATITUDE)
    # Rsquared of 92.4
 #model_x<- saveRDS(x, file = "Model_x")
 
 trimmedSet$LONGITUDE<- as.numeric(trimmedSet$LONGITUDE)
-#y<- train(LONGITUDE~., data = trimmedSet[, c(1:466)], method = "lm")
+y<- train(LONGITUDE~., data = trimmedSet[, c(1:466)], method = "lm")
 summary(y)
 postResample(y$finalModel$fitted.values, trimmedSet$LONGITUDE)
    #Rsquared of 94.38
 #model_y<- saveRDS(y, file = "Model_y")
 
 trimmedSet$FLOOR<- as.factor(trimmedSet$FLOOR)
-#z<- randomForest::randomForest(FLOOR~ .,trimmedSet[, c(1:465, 468)], ntree = 10)
+z<- randomForest::randomForest(FLOOR~ .,trimmedSet[, c(1:465, 468)], ntree = 10)
 z
     # Accuracy of 94.14
 #model_z<- saveRDS(z, file = "Model_z")
@@ -80,7 +80,7 @@ WAP <- grep(x = names(training_set), pattern = "WAP")
 train_mod<- training_set[WAP]
 
 
-# base_randomforest<- randomForest(y = training_set$FLOOR, x = train_mod , ntree = 150)
+base_randomforest<- randomForest(y = training_set$FLOOR, x = train_mod , ntree = 150)
 #saveRDS(base_randomforest, file = "Model_base_randomforest")
 
 base_randomforest
@@ -102,7 +102,7 @@ confusionMatrix(predicting_floor_on_validationset, validation_data$FLOOR)
 # Predicting longitude 
 training_set$LONGITUDE<- as.numeric(training_set$LONGITUDE)
 
-#random_forest_longitude<- randomForest(y = training_set$LONGITUDE, x = train_mod, ntree = 150)
+random_forest_longitude<- randomForest(y = training_set$LONGITUDE, x = train_mod, ntree = 150)
 random_forest_longitude
 #saveRDS(random_forest_longitude, file = "Model_random_forest_longitude")
 plot(random_forest_longitude)
@@ -120,7 +120,7 @@ postResample(predicting_longitude_on_validationset, validation_data$LONGITUDE)
 
 # Predicting latitude
 training_set$LATITUDE<- as.numeric(training_set$LATITUDE)
-#random_forest_latitude<- randomForest(y = training_set$LATITUDE, x = train_mod, ntree = 150)
+random_forest_latitude<- randomForest(y = training_set$LATITUDE, x = train_mod, ntree = 150)
 random_forest_latitude
 #saveRDS(random_forest_latitude, file = "Model_random_forest_latitude")
 plot(random_forest_latitude)
@@ -171,7 +171,7 @@ class(errorDataFrame$LatitudeError)
 training_set$BUILDINGID<- as.factor(training_set$BUILDINGID)
 testing_set$BUILDINGID<- as.factor(testing_set$BUILDINGID)
 
-#randomForestBuilding<- randomForest(y = training_set$BUILDINGID, x = train_mod, ntree = 150)
+randomForestBuilding<- randomForest(y = training_set$BUILDINGID, x = train_mod, ntree = 150)
 #saveRDS(randomForestBuilding, file = "Model_random_forest_building")
 buidingOnTest<- predict(randomForestBuilding, newdata = testing_set[, 1:465])
 buidingOnTest
@@ -186,7 +186,7 @@ confusionMatrix(validation_data$BUILDINGID, buildingOnValidation)
 train_mod$BUILDINGID<- randomForestBuilding$predicted
 
 
-#cascadingRandomForestLongitude<- randomForest(y = training_set$LONGITUDE, x = train_mod, ntree = 150)
+cascadingRandomForestLongitude<- randomForest(y = training_set$LONGITUDE, x = train_mod, ntree = 150)
 #saveRDS(cascadingRandomForestLongitude, file = "Model_cascading_random_forest_longitude")
 longitudeOnTest<- predict(cascadingRandomForestLongitude, newdata = testing_set[, c(1:465, 469)])
 longitudeOnTest
@@ -198,7 +198,7 @@ postResample(validation_data$LONGITUDE, longitudeOnValidation)
 
 train_mod$LONGITUDE<- cascadingRandomForestLongitude$predicted
 
-#cascadingRandonForestLatitude<- randomForest(y = training_set$LATITUDE, x = train_mod, ntree = 150)
+cascadingRandonForestLatitude<- randomForest(y = training_set$LATITUDE, x = train_mod, ntree = 150)
 #saveRDS(cascadingRandonForestLatitude, file = "Model_cascadingRandomForestLatitude")
 latitudeOnTest<- predict(cascadingRandonForestLatitude, newdata = testing_set[, c(1:466, 469)])
 latitudeOnTest
@@ -210,7 +210,7 @@ postResample(validation_data$LATITUDE, latitudeOnValidation)
 
 train_mod$LATITUDE<- cascadingRandonForestLatitude$predicted
 
-#cascadingRandomForestFloor<- randomForest(y = training_set$FLOOR, x = train_mod, ntree = 150)
+cascadingRandomForestFloor<- randomForest(y = training_set$FLOOR, x = train_mod, ntree = 150)
 #saveRDS(cascadingRandomForestFloor, file = "Model_cascadingRandomForestFloor")
 validation_data$FLOOR<- as.factor(validation_data$FLOOR)
 
